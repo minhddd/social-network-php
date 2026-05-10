@@ -40,37 +40,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Sign in</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — SocialNet</title>
+    <meta name="description" content="Sign in to your SocialNet account.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="navbar">
+    <span class="navbar-brand">✦ SocialNet</span>
     <a href="admin.php">Admin</a>
-    <a class="active" href="signin.php">Sign in</a>
+    <a class="active" href="signin.php">Sign In</a>
 </div>
 
 <div class="form-box">
-    <h1 class="center">Sign in</h1>
-    <p class="center small-text">Login to your account</p>
+    <div class="form-logo">
+        <div class="form-logo-icon">✦</div>
+    </div>
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to your account to continue</p>
 
     <?php if ($error != "") { ?>
         <div class="message error">
-            <?php echo htmlspecialchars($error); ?>
+            ⚠️ <?php echo htmlspecialchars($error); ?>
         </div>
     <?php } ?>
 
     <form method="post" action="signin.php">
-        <label>Username:</label>
-        <input type="text" name="username" required>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input id="username" type="text" name="username" placeholder="Enter your username" required autocomplete="username">
+        </div>
 
-        <label>Password:</label>
-        <input type="password" name="password" required>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
 
-        <button class="button" type="submit">Login</button>
-
+        <button class="button" type="submit" style="width:100%;justify-content:center;padding:14px;">Sign In</button>
     </form>
 </div>
 

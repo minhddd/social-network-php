@@ -30,46 +30,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — SocialNet</title>
+    <meta name="description" content="Admin panel for SocialNet — create new user accounts.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="navbar">
-    <a class="active" href="admin.php">Admin</a>
-    <a href="signin.php">Sign in</a>
+    <span class="navbar-brand">✦ SocialNet</span>
+    <a class="active" href="admin.php">🛡️ Admin</a>
+    <a href="signin.php">Sign In</a>
 </div>
 
-<div class="form-box">
-    <h1 class="center">Admin Form</h1>
-    <p class="center small-text">Create new user account</p>
+<div class="form-box" style="max-width:540px;">
+    <div class="form-logo">
+        <div class="form-logo-icon">🛡️</div>
+    </div>
+    <h1>Admin Panel</h1>
+    <p class="subtitle">Create a new user account</p>
 
     <?php if ($message != "") { ?>
         <div class="message <?php echo $message_class; ?>">
+            <?php echo $message_class === 'success' ? '✅' : '⚠️'; ?>
             <?php echo htmlspecialchars($message); ?>
         </div>
     <?php } ?>
 
     <form method="post" action="admin.php">
-        <label>Username:</label>
-        <input type="text" name="username" required>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input id="username" type="text" name="username" placeholder="Choose a username" required>
+        </div>
 
-        <label>Password:</label>
-        <input type="password" name="password" required>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" placeholder="Set a password" required autocomplete="new-password">
+        </div>
 
-        <label>Full name:</label>
-        <input type="text" name="fullname">
+        <div class="form-group">
+            <label for="fullname">Full Name</label>
+            <input id="fullname" type="text" name="fullname" placeholder="First and last name">
+        </div>
 
-        <label>Email:</label>
-        <input type="email" name="email">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" name="email" placeholder="user@example.com">
+        </div>
 
-        <label>Bio:</label>
-        <textarea name="bio"></textarea>
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" placeholder="Short user bio..."></textarea>
+        </div>
 
-        <button class="button">Create Account</button>
-        <a class="button button-blue" href="signin.php">Go to Sign in</a>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="button" type="submit" style="flex:1;justify-content:center;">✦ Create Account</button>
+            <a class="button button-outline" href="signin.php" style="flex:1;justify-content:center;text-align:center;">Go to Sign In →</a>
+        </div>
     </form>
 </div>
 

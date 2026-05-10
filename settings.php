@@ -60,45 +60,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Settings</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — SocialNet</title>
+    <meta name="description" content="Edit your SocialNet account settings and profile information.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="navbar">
-    <a href="home.php">Home</a>
-    <a href="profile.php?id=<?php echo $current_user_id; ?>">Profile</a>
-    <a class="active" href="settings.php">Settings</a>
-    <a href="signout.php">Logout</a>
+    <span class="navbar-brand">✦ SocialNet</span>
+    <a href="home.php">🏠 Home</a>
+    <a href="profile.php?id=<?php echo $current_user_id; ?>">👤 Profile</a>
+    <a class="active" href="settings.php">⚙️ Settings</a>
+    <a href="signout.php">🚪 Logout</a>
 </div>
 
-<div class="form-box">
+<div class="form-box" style="max-width:540px;">
+    <div class="form-logo">
+        <div class="form-logo-icon">⚙️</div>
+    </div>
     <h1>Account Settings</h1>
-    <p class="small-text" style="text-align:center;">Edit your personal information</p>
+    <p class="subtitle">Update your personal information</p>
 
     <?php if ($message != "") { ?>
         <div class="message <?php echo $message_class; ?>">
+            <?php echo $message_class === 'success' ? '✅' : '⚠️'; ?>
             <?php echo htmlspecialchars($message); ?>
         </div>
     <?php } ?>
 
     <form method="post" action="settings.php">
-        <label>Full name:</label>
-        <input type="text" name="fullname" value="<?php echo htmlspecialchars($user["fullname"]); ?>">
+        <div class="form-group">
+            <label for="fullname">Full Name</label>
+            <input id="fullname" type="text" name="fullname" value="<?php echo htmlspecialchars($user["fullname"]); ?>" placeholder="Your full name">
+        </div>
 
-        <label>Email:</label>
-        <input type="email" name="email" value="<?php echo htmlspecialchars($user["email"]); ?>">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" name="email" value="<?php echo htmlspecialchars($user["email"]); ?>" placeholder="your@email.com">
+        </div>
 
-        <label>Bio:</label>
-        <textarea name="bio"><?php echo htmlspecialchars($user["bio"]); ?></textarea>
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" placeholder="Tell people a little about yourself..."><?php echo htmlspecialchars($user["bio"]); ?></textarea>
+        </div>
 
-        <label>New password:</label>
-        <input type="password" name="new_password" placeholder="Leave blank if you do not want to change password">
+        <div class="form-group">
+            <label for="new_password">New Password</label>
+            <input id="new_password" type="password" name="new_password" placeholder="Leave blank to keep current password" autocomplete="new-password">
+        </div>
 
-        <button type="submit">Save changes</button>
-        <a class="button" href="profile.php?id=<?php echo $current_user_id; ?>">View profile</a>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="button" type="submit" style="flex:1;justify-content:center;">💾 Save Changes</button>
+            <a class="button button-outline" href="profile.php?id=<?php echo $current_user_id; ?>" style="flex:1;justify-content:center;text-align:center;">View Profile →</a>
+        </div>
     </form>
 </div>
 
