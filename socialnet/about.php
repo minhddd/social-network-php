@@ -42,12 +42,12 @@ if (!isset($_SESSION["user_id"])) {
         <div class="profile-row" style="justify-content:center;gap:32px;flex-wrap:wrap;">
             <div>
                 <div class="small-text" style="text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:600;margin-bottom:6px;">Student Name</div>
-                <div style="font-size:20px;font-weight:700;color:var(--text-primary);">Nguyen Van A</div>
+                <div style="font-size:20px;font-weight:700;color:var(--text-primary);">Nguyen Hoang Minh</div>
             </div>
             <div style="width:1px;background:var(--border);align-self:stretch;"></div>
             <div>
                 <div class="small-text" style="text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:600;margin-bottom:6px;">Student Number</div>
-                <div style="font-size:20px;font-weight:700;color:var(--text-primary);">123456789</div>
+                <div style="font-size:20px;font-weight:700;color:var(--text-primary);">1695570</div>
             </div>
         </div>
 
