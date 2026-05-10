@@ -146,6 +146,65 @@ $pending_received = $stmt->get_result();
         <?php endif; ?>
     </div>
 
+    <!-- Pending requests I sent -->
+    <?php if ($pending_sent->num_rows > 0): ?>
+    <h2 class="section-title">Pending Requests Sent</h2>
+    <div class="grid">
+        <?php while ($row = $pending_sent->fetch_assoc()):
+            $letter = strtoupper(substr($row["username"], 0, 1));
+        ?>
+            <div class="card">
+                <div class="avatar"><?php echo htmlspecialchars($letter); ?></div>
+                <div class="username"><?php echo htmlspecialchars($row["username"]); ?></div>
+                <div class="fullname">
+                    <?php echo htmlspecialchars($row["fullname"]) ?: '<em style="opacity:.5;">No name</em>'; ?>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+                    <button class="button button-pending" disabled>
+                        🕐 Pending…
+                    </button>
+                    <a class="button button-outline"
+                       href="/socialnet/profile.php?owner=<?php echo urlencode($row['username']); ?>">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    </div>
+    <?php endif; ?>
+
+    <!-- Pending requests I received -->
+    <?php if ($pending_received->num_rows > 0): ?>
+    <h2 class="section-title">Friend Requests Received</h2>
+    <div class="grid">
+        <?php while ($row = $pending_received->fetch_assoc()):
+            $letter = strtoupper(substr($row["username"], 0, 1));
+        ?>
+            <div class="card">
+                <div class="avatar"><?php echo htmlspecialchars($letter); ?></div>
+                <div class="username"><?php echo htmlspecialchars($row["username"]); ?></div>
+                <div class="fullname">
+                    <?php echo htmlspecialchars($row["fullname"]) ?: '<em style="opacity:.5;">No name</em>'; ?>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+                    <a class="button button-green"
+                       href="/socialnet/acceptfriend.php?id=<?php echo $row['request_id']; ?>">
+                        ✔ Accept
+                    </a>
+                    <a class="button button-red"
+                       href="/socialnet/declinefriend.php?id=<?php echo $row['request_id']; ?>">
+                        ✖ Decline
+                    </a>
+                    <a class="button button-outline"
+                       href="/socialnet/profile.php?owner=<?php echo urlencode($row['username']); ?>">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    </div>
+    <?php endif; ?>
+
     <!-- Friends list -->
     <h2 class="section-title">Your Friends</h2>
     <div class="grid">

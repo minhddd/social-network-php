@@ -361,6 +361,21 @@ body {
     box-shadow: none;
 }
 
+.button-pending {
+    background: rgba(234, 179, 8, 0.12);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    color: #fbbf24;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+.button-pending:hover {
+    transform: none;
+    filter: none;
+    box-shadow: none;
+}
+
 /* ==============================
    Empty State
    ============================== */
