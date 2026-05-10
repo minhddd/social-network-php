@@ -11,35 +11,77 @@ $current_user_id = $_SESSION["user_id"];
 $username        = $_SESSION["username"];
 $fullname        = $_SESSION["fullname"];
 
-// Fetch friends (users I have a friendship with)
-$sql  = "
-    SELECT a.id, a.username, a.fullname
+// Fetch friends: accepted requests in both directions
+$sql = "
+    SELECT a.id, a.username, a.fullname, a.description
     FROM account a
-    JOIN friendship f ON a.id = f.friend_id
-    WHERE f.user_id = ?
+    JOIN friend_request f
+        ON (
+            (a.id = f.receiver_id AND f.sender_id = ?)
+            OR
+            (a.id = f.sender_id AND f.receiver_id = ?)
+        )
+    WHERE f.status = 'accepted'
     ORDER BY a.username ASC
 ";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $current_user_id);
-$stmt->execute();
-$friends = $stmt->get_result();
 
-// Fetch non-friends (other users not yet in friendship)
-$sql  = "
-    SELECT id, username, fullname
-    FROM account
-    WHERE id != ?
-      AND id NOT IN (
-          SELECT friend_id FROM friendship WHERE user_id = ?
-      )
-    ORDER BY username ASC
-";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $current_user_id, $current_user_id);
 $stmt->execute();
-$strangers = $stmt->get_result();
-?>
+$friends = $stmt->get_result();
+// Fetch strangers: users who do not have any request with me
+$sql = "
+    SELECT id, username, fullname, description
+    FROM account
+    WHERE id != ?
+      AND id NOT IN (
+          SELECT receiver_id 
+          FROM friend_request 
+          WHERE sender_id = ?
+      )
+      AND id NOT IN (
+          SELECT sender_id 
+          FROM friend_request 
+          WHERE receiver_id = ?
+      )
+    ORDER BY username ASC
+";
 
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("iii", $current_user_id, $current_user_id, $current_user_id);
+$stmt->execute();
+$strangers = $stmt->get_result();
+
+// Fetch pending requests I sent
+$sql = "
+    SELECT a.id, a.username, a.fullname, a.description
+    FROM account a
+    JOIN friend_request f ON a.id = f.receiver_id
+    WHERE f.sender_id = ?
+      AND f.status = 'pending'
+    ORDER BY a.username ASC
+";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $current_user_id);
+$stmt->execute();
+$pending_sent = $stmt->get_result();
+
+// Fetch pending requests I received
+$sql = "
+    SELECT a.id, a.username, a.fullname, a.description, f.id AS request_id
+    FROM account a
+    JOIN friend_request f ON a.id = f.sender_id
+    WHERE f.receiver_id = ?
+      AND f.status = 'pending'
+    ORDER BY a.username ASC
+";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $current_user_id);
+$stmt->execute();
+$pending_received = $stmt->get_result();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,29 +1,32 @@
 <?php
-require_once '../db.php';
+require_once "../db.php";
 
 $message = "";
 $message_class = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST["username"]);
-    $password = $_POST["password"];
-    $fullname = trim($_POST["fullname"]);
+    $username = trim($_POST["username"] ?? "");
+    $password = $_POST["password"] ?? "";
+    $fullname = trim($_POST["fullname"] ?? "");
+    $description = trim($_POST["description"] ?? "");
 
-    if ($username === "" || $password === "") {
-        $message = "Username and password are required.";
+    if ($username == "" || $password == "" || $fullname == "") {
+        $message = "Username, full name and password are required.";
         $message_class = "error";
     } else {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO account (username, password_hash, fullname) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO account (username, fullname, password_hash, description)
+                VALUES (?, ?, ?, ?)";
+
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $username, $password_hash, $fullname);
+        $stmt->bind_param("ssss", $username, $fullname, $password_hash, $description);
 
         if ($stmt->execute()) {
             $message = "User \"" . htmlspecialchars($username) . "\" created successfully!";
             $message_class = "success";
         } else {
-            if ($conn->errno === 1062) {
+            if ($conn->errno == 1062) {
                 $message = "Username already exists. Please choose a different one.";
             } else {
                 $message = "Error: " . $conn->error;
