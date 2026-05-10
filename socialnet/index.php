@@ -11,12 +11,33 @@ $current_user_id = $_SESSION["user_id"];
 $username        = $_SESSION["username"];
 $fullname        = $_SESSION["fullname"];
 
-// Fetch all other users
-$sql  = "SELECT id, username, fullname FROM account WHERE id != ? ORDER BY username ASC";
+// Fetch friends (users I have a friendship with)
+$sql  = "
+    SELECT a.id, a.username, a.fullname
+    FROM account a
+    JOIN friendship f ON a.id = f.friend_id
+    WHERE f.user_id = ?
+    ORDER BY a.username ASC
+";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $current_user_id);
 $stmt->execute();
-$others = $stmt->get_result();
+$friends = $stmt->get_result();
+
+// Fetch non-friends (other users not yet in friendship)
+$sql  = "
+    SELECT id, username, fullname
+    FROM account
+    WHERE id != ?
+      AND id NOT IN (
+          SELECT friend_id FROM friendship WHERE user_id = ?
+      )
+    ORDER BY username ASC
+";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $current_user_id, $current_user_id);
+$stmt->execute();
+$strangers = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +46,7 @@ $others = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home · SocialNet</title>
-    <meta name="description" content="Your SocialNet home — see other users and navigate the app.">
+    <meta name="description" content="Your SocialNet home — see your friends and discover new people.">
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -53,24 +74,57 @@ $others = $stmt->get_result();
         </p>
     </div>
 
-    <!-- Other users list -->
-    <h2 class="section-title">All Users</h2>
-
+    <!-- People you may know -->
+    <h2 class="section-title">People You May Know</h2>
     <div class="grid">
-        <?php if ($others->num_rows === 0): ?>
-            <div class="empty">👥 No other users in the system yet.</div>
+        <?php if ($strangers->num_rows === 0): ?>
+            <div class="empty">🎉 You're connected with everyone in the system!</div>
         <?php else: ?>
-            <?php while ($row = $others->fetch_assoc()):
+            <?php while ($row = $strangers->fetch_assoc()):
                 $letter = strtoupper(substr($row["username"], 0, 1));
             ?>
                 <div class="card">
                     <div class="avatar"><?php echo htmlspecialchars($letter); ?></div>
                     <div class="username"><?php echo htmlspecialchars($row["username"]); ?></div>
-                    <div class="fullname"><?php echo htmlspecialchars($row["fullname"]) ?: '<em style="opacity:.5;">No name</em>'; ?></div>
-                    <p class="bio" style="margin-top:10px;"></p>
-                    <a class="button" href="/socialnet/profile.php?owner=<?php echo urlencode($row['username']); ?>">
-                        View Profile →
-                    </a>
+                    <div class="fullname">
+                        <?php echo htmlspecialchars($row["fullname"]) ?: '<em style="opacity:.5;">No name</em>'; ?>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+                        <a class="button button-green"
+                           href="/socialnet/addfriend.php?id=<?php echo $row['id']; ?>">
+                            + Add Friend
+                        </a>
+                        <a class="button button-outline"
+                           href="/socialnet/profile.php?owner=<?php echo urlencode($row['username']); ?>">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        <?php endif; ?>
+    </div>
+
+    <!-- Friends list -->
+    <h2 class="section-title">Your Friends</h2>
+    <div class="grid">
+        <?php if ($friends->num_rows === 0): ?>
+            <div class="empty">👋 No friends yet — add some people above!</div>
+        <?php else: ?>
+            <?php while ($row = $friends->fetch_assoc()):
+                $letter = strtoupper(substr($row["username"], 0, 1));
+            ?>
+                <div class="card">
+                    <div class="avatar"><?php echo htmlspecialchars($letter); ?></div>
+                    <div class="username"><?php echo htmlspecialchars($row["username"]); ?></div>
+                    <div class="fullname">
+                        <?php echo htmlspecialchars($row["fullname"]) ?: '<em style="opacity:.5;">No name</em>'; ?>
+                    </div>
+                    <div style="margin-top:18px;">
+                        <a class="button"
+                           href="/socialnet/profile.php?owner=<?php echo urlencode($row['username']); ?>">
+                            View Profile →
+                        </a>
+                    </div>
                 </div>
             <?php endwhile; ?>
         <?php endif; ?>
